@@ -1,14 +1,29 @@
 # cipher2
 
-A new flutter plugin project.
+A flutter plugin project for AES encryption and decrytion.
 
 ## Getting Started
 
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.io/developing-packages/),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
+This project is a plugin package for flutter which implements AES encrytion and decryption.
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.io/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+```dart
+String plainText = '我是shyandsy，never give up man';
+String key = 'xxxxxxxxxxxxxxxx';
+String iv = 'yyyyyyyyyyyyyyyy';
+```
+
+## encrytion
+
+this method will return a based 64 encoded ciphertext
+
+```dart
+// encrytion
+String encryptedString = await Cipher2.encryptAesCbc128Padding7(plainText, key, iv);
+```
+
+## decryption
+
+```dart
+// decrytion
+decryptedString = await Cipher2.decryptAesCbc128Padding7(encryptedString, key, iv);
+```
