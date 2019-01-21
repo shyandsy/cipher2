@@ -1,7 +1,7 @@
 name: cipher2
 description: A plugin for AES encrytion and decrytion.
 version: 0.0.1
-author: shyandsy
+author: shyandsy <shyandsy@gmail.com>
 homepage: https://github.com/shyandsy/cipher2
 
 environment:

@@ -27,4 +27,3 @@ String encryptedString = await Cipher2.encryptAesCbc128Padding7(plainText, key, 
 // decrytion
 decryptedString = await Cipher2.decryptAesCbc128Padding7(encryptedString, key, iv);
 ```
-
