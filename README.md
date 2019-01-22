@@ -1,6 +1,8 @@
 # cipher2
 
-A flutter plugin project for AES encryption and decrytion.
+A flutter plugin project for AES encryption and decrytion which support both ios and android.
+
+For now, it supports AES CBC pkcspadding7 only. I will update this plugin if anyone require other encrytion method.
 
 ## Getting Started
 
