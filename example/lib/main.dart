@@ -29,17 +29,27 @@ class _MyAppState extends State<MyApp> {
     String iv = 'yyyyyyyyyyyyyyyy';
     String decryptedString;
 
-    // Platform messages may fail, so we use a try/catch PlatformException.
+    // test
+    await testEncrytion();
+
+    await testDecrytion();
+    
     try {
 
       // encrytion
       encryptedString = await Cipher2.encryptAesCbc128Padding7(plainText, key, iv);
       
       // decrytion
+      //encryptedString = "hello";
       decryptedString = await Cipher2.decryptAesCbc128Padding7(encryptedString, key, iv);
     
-    } on PlatformException {
-      plainText = 'Failed to get platform version.';
+    } on PlatformException catch(e) {
+
+      encryptedString = "";
+      decryptedString = "";
+      print("exception code: " + e.code);
+      print("exception message: " + e.message);
+
     }
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -52,6 +62,214 @@ class _MyAppState extends State<MyApp> {
       _encryptedString = encryptedString;
       _decryptedString = decryptedString;
     });
+  }
+
+  void testEncrytion() async{
+    // case 1： wrong length on key
+    String plainText = '我是shyandsy，never give up man';
+    String key = 'xx';
+    String iv = 'yyyyyyyyyyyyyyyy';
+    String encryptedString = "";
+    
+    try {
+      // encrytion
+      encryptedString = await Cipher2.encryptAesCbc128Padding7(plainText, key, iv);
+      print("testEncrytion case1: failed");
+    } on PlatformException catch(e) {
+      encryptedString = "";
+      if(e.code == "ERROR_INVALID_KEY_OR_IV_LENGTH"){
+        print("testEncrytion case1: pass");
+      }else{
+        print("testEncrytion case1: failed");
+      }
+    }
+
+    // case 2： wrong length on iv
+    plainText = '我是shyandsy，never give up man';
+    key = 'xxxxxxxxxxxxxxxx';
+    iv = 'yyy';
+    encryptedString = "";
+    
+    try {
+      // encrytion
+      encryptedString = await Cipher2.encryptAesCbc128Padding7(plainText, key, iv);
+      print("testEncrytion case2: failed");
+    } on PlatformException catch(e) {
+      encryptedString = "";
+      if(e.code == "ERROR_INVALID_KEY_OR_IV_LENGTH"){
+        print("testEncrytion case2: pass");
+      }else{
+        print("testEncrytion case2: failed");
+      }
+    }
+
+    // case 3: null data
+    plainText = '我是shyandsy，never give up man';
+    key = 'xxxxxxxxxxxxxxxx';
+    iv = 'yyy';
+    encryptedString = "";
+    
+    try {
+      // encrytion
+      encryptedString = await Cipher2.encryptAesCbc128Padding7(null, key, iv);
+      print("testEncrytion case3: failed");
+    } on PlatformException catch(e) {
+      encryptedString = "";
+      if(e.code == "ERROR_INVALID_PARAMETER_TYPE"){
+        print("testEncrytion case3: pass");
+      }else{
+        print("testEncrytion case3: failed");
+      }
+    }
+
+    // case 4: null key
+    plainText = '我是shyandsy，never give up man';
+    key = 'xxxxxxxxxxxxxxxx';
+    iv = 'yyyyyyyyyyyyyyyy';
+    encryptedString = "";
+    
+    try {
+      // encrytion
+      encryptedString = await Cipher2.encryptAesCbc128Padding7(plainText, null, iv);
+      print("testEncrytion case4: failed");
+    } on PlatformException catch(e) {
+      encryptedString = "";
+      if(e.code == "ERROR_INVALID_PARAMETER_TYPE"){
+        print("testEncrytion case4: pass");
+      }else{
+        print("testEncrytion case4: failed");
+      }
+    }
+
+    // case 5: null iv
+    plainText = '我是shyandsy，never give up man';
+    key = 'xxxxxxxxxxxxxxxx';
+    iv = 'yyyyyyyyyyyyyyyy';
+    encryptedString = "";
+    
+    try {
+      // encrytion
+      encryptedString = await Cipher2.encryptAesCbc128Padding7(plainText, key, null);
+      print("testEncrytion case5: failed");
+    } on PlatformException catch(e) {
+      encryptedString = "";
+      if(e.code == "ERROR_INVALID_PARAMETER_TYPE"){
+        print("testEncrytion case5: pass");
+      }else{
+        print("testEncrytion case5: failed");
+      }
+    }
+  }
+
+  void testDecrytion() async{
+    // case 1： wrong length on key
+    String encryptedString = '我是shyandsy，never give up man';
+    String key = 'xx';
+    String iv = 'yyyyyyyyyyyyyyyy';
+    String plainText = "";
+    
+    try {
+      // encrytion
+      plainText = await Cipher2.decryptAesCbc128Padding7(encryptedString, key, iv);
+      print("testDecrytion case1: failed");
+    } on PlatformException catch(e) {
+      encryptedString = "";
+      if(e.code == "ERROR_INVALID_KEY_OR_IV_LENGTH"){
+        print("testDecrytion case1: pass");
+      }else{
+        print("testDecrytion case1: failed");
+      }
+    }
+
+    // case 2： wrong length on iv
+    encryptedString = '我是shyandsy，never give up man';
+    key = 'xxxxxxxxxxxxxxxx';
+    iv = 'yyy';
+    
+    try {
+      // encrytion
+      plainText = await Cipher2.decryptAesCbc128Padding7(encryptedString, key, iv);
+      print("testDecrytion case2: failed");
+    } on PlatformException catch(e) {
+      encryptedString = "";
+      if(e.code == "ERROR_INVALID_KEY_OR_IV_LENGTH"){
+        print("testDecrytion case2: pass");
+      }else{
+        print("testDecrytion case2: failed");
+      }
+    }
+
+    // case 3: null data
+    encryptedString = '我是shyandsy，never give up man';
+    key = 'xxxxxxxxxxxxxxxx';
+    iv = 'yyy';
+    
+    try {
+      // encrytion
+      plainText = await Cipher2.decryptAesCbc128Padding7(null, key, iv);
+      print("testDecrytion case3: failed");
+    } on PlatformException catch(e) {
+      encryptedString = "";
+      if(e.code == "ERROR_INVALID_PARAMETER_TYPE"){
+        print("testDecrytion case3: pass");
+      }else{
+        print("testDecrytion case3: failed");
+      }
+    }
+
+    // case 4: null key
+    encryptedString = '我是shyandsy，never give up man';
+    key = 'xxxxxxxxxxxxxxxx';
+    iv = 'yyyyyyyyyyyyyyyy';
+    
+    try {
+      // encrytion
+      plainText = await Cipher2.decryptAesCbc128Padding7(encryptedString, null, iv);
+      print("testDecrytion case4: failed");
+    } on PlatformException catch(e) {
+      encryptedString = "";
+      if(e.code == "ERROR_INVALID_PARAMETER_TYPE"){
+        print("testDecrytion case4: pass");
+      }else{
+        print("testDecrytion case4: failed");
+      }
+    }
+
+    // case 5: null iv
+    encryptedString = '我是shyandsy，never give up man';
+    key = 'xxxxxxxxxxxxxxxx';
+    iv = 'yyyyyyyyyyyyyyyy';
+    
+    try {
+      // encrytion
+      plainText = await Cipher2.decryptAesCbc128Padding7(encryptedString, key, null);
+      print("testDecrytion case5: failed");
+    } on PlatformException catch(e) {
+      encryptedString = "";
+      if(e.code == "ERROR_INVALID_PARAMETER_TYPE"){
+        print("testDecrytion case5: pass");
+      }else{
+        print("testDecrytion case5: failed");
+      }
+    }
+
+    // case 6: data
+    encryptedString = '我是shyandsy，never give up man';
+    key = 'xxxxxxxxxxxxxxxx';
+    iv = 'yyyyyyyyyyyyyyyy';
+    
+    try {
+      // encrytion
+      plainText = await Cipher2.decryptAesCbc128Padding7(encryptedString, key, iv);
+      print("testDecrytion case6: failed");
+    } on PlatformException catch(e) {
+      encryptedString = "";
+      if(e.code == "ERROR_INVALID_ENCRYPTED_DATA"){
+        print("testDecrytion case6: pass");
+      }else{
+        print("testDecrytion case6: failed");
+      }
+    }
   }
 
   @override

@@ -29,22 +29,55 @@ public class SwiftCipher2Plugin: NSObject, FlutterPlugin {
     switch call.method {
     case "Encrypt_AesCbc128Padding7":
       guard let args = call.arguments as? [String: String] else {
-        fatalError("args are formatted badly")
+        result(
+          FlutterError(
+            code: "ERROR_INVALID_PARAMETER_TYPE",
+            message: "the parameters data, key and iv must be all strings",
+            details: nil
+          )
+        )
+        return
+      }
+
+      if(args["data"] == nil || args["key"] == nil || args["iv"] == nil){
+        result(
+          FlutterError(
+            code: "ERROR_INVALID_PARAMETER_TYPE",
+            message: "the parameters data, key and iv must be all strings",
+            details: nil
+          )
+        )
+        return
       }
 
       let data = args["data"]!
       let key = args["key"]!
       let iv = args["iv"]!
 
+      let dataArray = Array(data.utf8)
+      let keyArray = Array(key.utf8)
+      let ivArray = Array(iv.utf8)
+
+      if(key.count != 16 || iv.count != 16){
+        result(
+          FlutterError(
+            code: "ERROR_INVALID_KEY_OR_IV_LENGTH",
+            message: "the length of key and iv must be all 128 bits",
+            details: nil
+          )
+        )
+        return
+      }
+
       var encryptedBase64 = "";
 
       do {
 
         let encrypted = try AES(
-          key: Array(key.utf8), 
-          blockMode: CBC(iv: Array(iv.utf8)), 
+          key: keyArray, 
+          blockMode: CBC(iv: ivArray), 
           padding: .pkcs7
-        ).encrypt(Array(data.utf8))
+        ).encrypt(dataArray)
         
         let encryptedNSData = NSData(bytes: encrypted, length: encrypted.count)
 
@@ -59,23 +92,68 @@ public class SwiftCipher2Plugin: NSObject, FlutterPlugin {
     case "Decrypt_AesCbc128Padding7":
 
       guard let args = call.arguments as? [String: String] else {
-        fatalError("args are formatted badly")
+        result(
+          FlutterError(
+            code: "ERROR_INVALID_PARAMETER_TYPE",
+            message: "the parameters data, key and iv must be all strings",
+            details: nil
+          )
+        )
+        return
+      }
+
+      if(args["data"] == nil || args["key"] == nil || args["iv"] == nil){
+        result(
+          FlutterError(
+            code: "ERROR_INVALID_PARAMETER_TYPE",
+            message: "the parameters data, key and iv must be all strings",
+            details: nil
+          )
+        )
+        return
       }
 
       let data = args["data"]!
       let key = args["key"]!
       let iv = args["iv"]!
 
-      let encryptedData = NSData(base64Encoded: data, options:[])!
+      //let dataArray = Array(data.utf8)
+      let keyArray = Array(key.utf8)
+      let ivArray = Array(iv.utf8)
 
-      let encrypted = [UInt8](encryptedData as Data)
+      if(key.count != 16 || iv.count != 16){
+        result(
+          FlutterError(
+            code: "ERROR_INVALID_KEY_OR_IV_LENGTH",
+            message: "the length of key and iv must be all 128 bits",
+            details: nil
+          )
+        )
+        return
+      }
+
+      //解码得到Array<Int32>
+      let encryptedData = NSData(base64Encoded: data, options:[]) ?? nil
+
+      if(encryptedData == nil || encryptedData!.length % 4 != 0){
+        result(
+          FlutterError(
+            code: "ERROR_INVALID_ENCRYPTED_DATA",
+            message: "the data should be a valid base64 string with length at multiple of 128 bits",
+            details: nil
+          )
+        )
+        return
+      }
+
+      let encrypted = [UInt8](encryptedData! as Data)
 
       var plaintext = "";
 
       do {
         let decryptedData = try AES(
-          key: Array(key.utf8), 
-          blockMode: CBC(iv: Array(iv.utf8)), 
+          key: keyArray, 
+          blockMode: CBC(iv: ivArray), 
           padding: .pkcs7
         ).decrypt(encrypted)
         

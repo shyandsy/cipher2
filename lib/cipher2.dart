@@ -18,20 +18,11 @@ class Cipher2 {
     });
 
   static Future<String> decryptAesCbc128Padding7(String data, String key, String iv) async {
-    try {
-      final decrypted = await _channel.invokeMethod("Decrypt_AesCbc128Padding7", {
-        "data": data,
-        "key": key,
-        "iv": iv,
-      });
-      return decrypted;
-    } on PlatformException catch (e) {
-      switch (e.code) {
-        case "mac_mismatch":
-          throw new Exception();
-        default:
-          rethrow;
-      }
-    }
+    final decrypted = await _channel.invokeMethod("Decrypt_AesCbc128Padding7", {
+      "data": data,
+      "key": key,
+      "iv": iv,
+    });
+    return decrypted;
   }
 }
