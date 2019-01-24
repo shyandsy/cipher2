@@ -33,6 +33,7 @@ class Cipher2Plugin: MethodCallHandler {
           "the parameters data, key and iv must be all strings",
           null
         )
+        return
       }
 
       if(key?.length != 16 || iv?.length != 16){
@@ -62,6 +63,9 @@ class Cipher2Plugin: MethodCallHandler {
       print(text)
 
       result.success(text) 
+
+      return
+
     } else if (call.method == "Decrypt_AesCbc128Padding7") {
       val data = call.argument<String>("data")
       val key = call.argument<String>("key")
@@ -73,6 +77,7 @@ class Cipher2Plugin: MethodCallHandler {
           "the parameters data, key and iv must be all strings",
           null
         )
+        return
       }
 
       if(key?.length != 16 || iv?.length != 16){
@@ -121,8 +126,13 @@ class Cipher2Plugin: MethodCallHandler {
       val text = ciphertext.toString(charset)
       
       result.success(text) 
+
+      return
     } else {
       result.notImplemented()
+      return
     }
+
+
   }
 }
