@@ -28,3 +28,15 @@ v0.3.1
 - update the README.md
 - update the widget test for example project
 - format the lib/cipher2.dart
+
+v0.3.2
+
+- update the CHANGELOG.md
+
+v0.3.3
+
+- update the CHANGELOG.md
+
+v0.3.4
+
+- add dart doc for cipher2.dart
