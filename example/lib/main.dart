@@ -30,9 +30,11 @@ class _MyAppState extends State<MyApp> {
     String decryptedString;
 
     // test
-    await testEncrytion();
+    await testEncryptAesCbc128Padding7();
 
-    await testDecrytion();
+    await testDecryptAesCbc128Padding7();
+
+    await testEncryptAesGcm128(); // GenerateNonce();
     
     try {
 
@@ -64,7 +66,7 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  void testEncrytion() async{
+  void testEncryptAesCbc128Padding7() async{
     // case 1： wrong length on key
     String plainText = '我是shyandsy，never give up man';
     String key = 'xx';
@@ -161,7 +163,7 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  void testDecrytion() async{
+  void testDecryptAesCbc128Padding7() async{
     // case 1： wrong length on key
     String encryptedString = '我是shyandsy，never give up man';
     String key = 'xx';
@@ -270,6 +272,38 @@ class _MyAppState extends State<MyApp> {
         print("testDecrytion case6: failed");
       }
     }
+  }
+
+  void testEncryptAesGcm128() async{
+    String nonce = await Cipher2.generateNonce();
+    String encryptedString = "";
+    String plaintext = "我是谁，来喝杯茶";
+    String key = "key1234567123456";
+    String result = "";
+
+    try{
+      encryptedString = await Cipher2.encryptAesGcm128(plaintext, key, nonce);
+      //print(nonce);
+      //print(encryptedString);
+      print("testEncryptAesGcm128 case1: pass");
+    } on PlatformException catch(e) {
+      print("testEncryptAesGcm128 case1: failed");
+    }    
+
+    try{
+      result = await Cipher2.decryptAesGcm128(encryptedString, key, nonce);
+      //print(result);
+      print("testEncryptAesGcm128 case2: pass");
+    } on PlatformException catch(e) {
+      print("testEncryptAesGcm128 case2: failed, " + e.code);
+    }    
+
+    if(plaintext != result){
+      print("testEncryptAesGcm128 case3: failed");
+    }else{
+      print("testEncryptAesGcm128 case3: pass");
+    }
+    
   }
 
   @override

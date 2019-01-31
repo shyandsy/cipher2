@@ -25,4 +25,23 @@ class Cipher2 {
     });
     return decrypted;
   }
+
+  static Future<String> generateNonce() async =>
+    await _channel.invokeMethod("Generate_Nonce", {});
+
+  static Future<String> encryptAesGcm128(String data, String key, String nonce) async =>
+    await _channel.invokeMethod("Encrypt_AesGcm128", {
+      "data": data,
+      "key": key,
+      "nonce": nonce,
+    });
+
+  static Future<String> decryptAesGcm128(String data, String key, String nonce) async {
+    final decrypted = await _channel.invokeMethod("Decrypt_AesGcm128", {
+      "data": data,
+      "key": key,
+      "nonce": nonce,
+    });
+    return decrypted;
+  }
 }
