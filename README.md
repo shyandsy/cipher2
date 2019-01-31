@@ -6,6 +6,8 @@ A flutter plugin project for AES encryption and decrytion which support both ios
 
 本插件帮助开发者在自己的应用内使用AES加密解密。
 
+This package contains a set of high-level functions for the encryption and decryption. For now, this package only support AES algorithm. Also, there are two modes support right now. The first one is `CBC 128 bit padding 7`, and second is `GCM 128 bit`. I will continue working on this project to make it sopport other mode of AES, and the other algorithms like DES, MD5, SHA1 and so on.
+
 **all strings in this plugin use UTF8 encoding**
 
 **本插件所有字符串都使用utf8编码**
