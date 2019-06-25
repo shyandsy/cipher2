@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'dart:io';
 import 'package:convert/convert.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -38,7 +39,9 @@ class _MyAppState extends State<MyApp> {
 
     await testRaw();
 
-    await testEncryptAesGcm128(); // GenerateNonce();
+    if(!Platform.isIOS) {
+      await testEncryptAesGcm128(); // GenerateNonce();
+    }
     
     try {
 
