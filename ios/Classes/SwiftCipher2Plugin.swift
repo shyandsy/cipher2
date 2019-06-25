@@ -27,6 +27,58 @@ public class SwiftCipher2Plugin: NSObject, FlutterPlugin {
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
+    case "Encrypt_AesCbc128Padding7Raw":
+          let args = call.arguments
+
+          if(args["data"] == nil || args["key"] == nil || args["iv"] == nil){
+            result(
+              FlutterError(
+                code: "ERROR_INVALID_PARAMETER_TYPE",
+                message: "the parameters data, key and iv must be all strings",
+                details: nil
+              )
+            )
+            return
+          }
+
+          let data =  args["data"] as! FlutterStandardTypedData
+          let key = args["key"]!
+          let iv = args["iv"]!
+
+          let dataArray = [UInt8](data.data)
+          let keyArray = Array(key.utf8)
+          let ivArray = Array(iv.utf8)
+
+          if(key.count != 16 || iv.count != 16){
+            result(
+              FlutterError(
+                code: "ERROR_INVALID_KEY_OR_IV_LENGTH",
+                message: "the length of key and iv must be all 128 bits",
+                details: nil
+              )
+            )
+            return
+          }
+
+          var encryptedBase64 = "";
+
+          do {
+
+            let encrypted = try AES(
+              key: keyArray,
+              blockMode: CBC(iv: ivArray),
+              padding: .pkcs7
+            ).encrypt(dataArray)
+
+            let encryptedNSData = NSData(bytes: encrypted, length: encrypted.count)
+
+            encryptedBase64 = encryptedNSData.base64EncodedString(options:[])
+
+          } catch {
+
+          }
+
+          result(encryptedBase64)
     case "Encrypt_AesCbc128Padding7":
       guard let args = call.arguments as? [String: String] else {
         result(
