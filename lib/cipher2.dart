@@ -1,10 +1,29 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:flutter/services.dart';
 
 /// The class provide encryption and decrytion method 
 class Cipher2 {
   /// the channel for cipher2
   static const MethodChannel _channel = const MethodChannel('cipher2');
+
+  static Future<Uint8List> encryptAesCbc128Padding7Raw(
+      Uint8List data, String key, String iv) async =>
+      await _channel.invokeMethod("Encrypt_AesCbc128Padding7Raw", {
+        "data": data,
+        "key": key,
+        "iv": iv,
+      });
+
+  static Future<Uint8List> decryptAesCbc128Padding7Raw(
+      Uint8List data, String key, String iv) async {
+    final decrypted = await _channel.invokeMethod("Decrypt_AesCbc128Padding7Raw", {
+      "data": data,
+      "key": key,
+      "iv": iv,
+    });
+    return decrypted;
+  }
 
   /// Encrypt data by AES algorithm with CCB Padding 7 mode, and return a
   /// base64 encoded encrypted string

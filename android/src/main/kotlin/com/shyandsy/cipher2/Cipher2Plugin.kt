@@ -27,6 +27,14 @@ class Cipher2Plugin: MethodCallHandler {
   override fun onMethodCall(call: MethodCall, result: Result) {
     if (call.method == "getPlatformVersion") {
       result.success("Android ${android.os.Build.VERSION.RELEASE}")
+    } else if (call.method == "Encrypt_AesCbc128Padding7Raw") {
+
+      return Encrypt_AesCbc128Padding7Raw(call, result)
+
+    } else if (call.method == "Decrypt_AesCbc128Padding7Raw") {
+
+      return Decrypt_AesCbc128Padding7Raw(call, result)
+
     } else if (call.method == "Encrypt_AesCbc128Padding7") {
       
       return Encrypt_AesCbc128Padding7(call, result)
@@ -51,6 +59,49 @@ class Cipher2Plugin: MethodCallHandler {
       result.notImplemented()
       return
     }
+  }
+
+  // AES 128 cbc padding 7
+  fun Encrypt_AesCbc128Padding7Raw(call: MethodCall, result: Result){
+    val data = call.argument<ByteArray>("data")
+    val key = call.argument<String>("key")
+    val iv = call.argument<String>("iv")
+
+    if(data == null || key == null || iv == null){
+      result.error(
+              "ERROR_INVALID_PARAMETER_TYPE",
+              "the parameters data, key and iv must be all strings",
+              null
+      )
+      return
+    }
+
+    val dataArray = data
+    val keyArray = key.toByteArray(CHARSET)
+    val ivArray = iv.toByteArray(CHARSET)
+
+    if(keyArray.size != 16 || ivArray.size != 16){
+      result.error(
+              "ERROR_INVALID_KEY_OR_IV_LENGTH",
+              "the length of key and iv must be all 128 bits",
+              null
+      )
+      return
+    }
+
+    val cipher = Cipher.getInstance("AES/CBC/PKCS7Padding")
+    val keySpec = SecretKeySpec(keyArray, "AES")
+    val ivSpec = IvParameterSpec(ivArray)
+
+    cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec)
+
+    val ciphertext = cipher.doFinal(dataArray)
+
+    //val text = Base64.getEncoder().encodeToString(ciphertext)
+
+    result.success(ciphertext)
+
+    return
   }
 
   // AES 128 cbc padding 7
@@ -92,6 +143,65 @@ class Cipher2Plugin: MethodCallHandler {
     val text = Base64.getEncoder().encodeToString(ciphertext)
 
     result.success(text) 
+
+    return
+  }
+
+  fun Decrypt_AesCbc128Padding7Raw(call: MethodCall, result: Result){
+    val data = call.argument<ByteArray>("data")
+    val key = call.argument<String>("key")
+    val iv = call.argument<String>("iv")
+
+    if(data == null || key == null || iv == null){
+      result.error(
+              "ERROR_INVALID_PARAMETER_TYPE",
+              "the parameters data, key and iv must be all strings",
+              null
+      )
+      return
+    }
+
+    val keyArray = key.toByteArray(CHARSET)
+    val ivArray = iv.toByteArray(CHARSET)
+
+    if(keyArray.size != 16 || ivArray.size != 16){
+      result.error(
+              "ERROR_INVALID_KEY_OR_IV_LENGTH",
+              "the length of key and iv must be all 128 bits",
+              null
+      )
+      return
+    }
+
+    val dataArray = data
+    //var dataArray:ByteArray; // = ByteArray(0)
+
+    try{
+      //dataArray = Base64.getDecoder().decode(data)
+      if(dataArray.size % 16 != 0){
+        throw IllegalArgumentException("")
+      }
+    }catch (e: IllegalArgumentException) {
+      result.error(
+              "ERROR_INVALID_ENCRYPTED_DATA",
+              "the data should be a valid base64 string with length at multiple of 128 bits",
+              null
+      )
+      return
+    }
+
+
+    val cipher = Cipher.getInstance("AES/CBC/PKCS7Padding")
+    val keySpec = SecretKeySpec(keyArray, "AES")
+    val ivSpec = IvParameterSpec(ivArray)
+
+    cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec)
+
+    val ciphertext = cipher.doFinal(dataArray)
+
+    //val text = ciphertext.toString(CHARSET)
+
+    result.success(ciphertext)
 
     return
   }

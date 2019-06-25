@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+import 'dart:io';
+import 'package:convert/convert.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
@@ -34,7 +37,11 @@ class _MyAppState extends State<MyApp> {
 
     await testDecryptAesCbc128Padding7();
 
-    await testEncryptAesGcm128(); // GenerateNonce();
+    await testRaw();
+
+    if(!Platform.isIOS) {
+      await testEncryptAesGcm128(); // GenerateNonce();
+    }
     
     try {
 
@@ -64,6 +71,22 @@ class _MyAppState extends State<MyApp> {
       _encryptedString = encryptedString;
       _decryptedString = decryptedString;
     });
+  }
+
+  static const String aes128Key = "HQBT-V501-AES000";
+  void testRaw() async {
+
+    List<int> test = [0x8e,0x43,0xf6,0xa8,0x88,0x5a,0x30,0x8d,0x31,0x31,0x98,0xa2,0xe0,0x37,0xae,0xee,0x12,0x4f,0x0f];
+    Uint8List tmpData = Uint8List.fromList(test);
+    try {
+      Uint8List encryptedData = await Cipher2.encryptAesCbc128Padding7Raw(tmpData, aes128Key, aes128Key);
+      print("--------------------> encryptedString:${hex.encode(encryptedData).toUpperCase()}");
+      Uint8List decryptedData = await Cipher2.decryptAesCbc128Padding7Raw(encryptedData, aes128Key, aes128Key);
+      print("--------------------> decryptedData:${hex.encode(decryptedData).toUpperCase()}");
+    } on PlatformException catch(e) {
+      print("error:$e");
+    }
+
   }
 
   void testEncryptAesCbc128Padding7() async{
